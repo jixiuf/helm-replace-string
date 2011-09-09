@@ -56,22 +56,17 @@
   "`replae-string' and `query-replae' `anything.el' interface"
   :group 'lisp
   :prefix "anything-replace-string-")
-
-(defvar anything-replace-string-history nil
-  "Replace history.")
-;;init
-(setq anything-replace-string-history nil)
-
-(defvar anything-replace-string-history-candidates nil
-  "Replace history.")
-;;init
-(setq anything-replace-string-history-candidates nil)
-
 (defcustom anything-replace-string-separator
   " -> "
   "Replace string pair separator"
   :type 'string
   :group 'anything-replace-string)
+
+(defvar anything-replace-string-history nil
+  "Replace history.")
+
+(defvar anything-replace-string-history-candidates nil
+  "Replace history.")
 
 (defadvice replace-string (before anything-replace-string-replace-string(from-string to-string &optional delimited start end) activate)
   (anything-replace-string-push-history from-string to-string 'replace-string))
@@ -267,6 +262,7 @@
         (perform-replace from-string to-string t regexp-flag nil nil nil (region-beginning) (region-end))
       (perform-replace from-string to-string t regexp-flag nil))))
 
+;;;###autoload
 (defun anything-replace-string()
   "Replace string from history."
   (interactive)
