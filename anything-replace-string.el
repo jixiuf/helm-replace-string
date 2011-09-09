@@ -37,8 +37,6 @@
 ;;
 ;; Below are complete command list:
 ;;
-;;  `anything-replace-string'
-;;    Replace string from history.
 ;;
 ;;; Customizable Options:
 ;;
@@ -94,7 +92,9 @@
     (action
      ("Smart Replace" . anything-smart-replace-action)
      ("Replace String" . anything-replace-string-action)
+     ("Replace Regexp" . anything-replace-regexp-action)
      ("Query Replace" . anything-query-replace-action)
+     ("Query Regexp" . anything-query-replace-regexp-action)
      ("Smart Replace Reverse" . anything-smart-replace-reverse-action)
      ("Replace String Reverse" . anything-replace-string-reverse-action)
      ("Query Replace Reverse" . anything-query-replace-reverse-action))
@@ -124,12 +124,25 @@
                (progn
                  (cond ((equal 'replace-string (caddr x)) (anything-replace-string-region x))
                        ((equal 'query-string (caddr x)) (anything-query-replace-region x))
+                       (equal 'replace-regexp (caddr x)) (anything-replace-string-region x 'search-forward-regexp))
+                        (equal 'replace-regexp (caddr x)) (anything-query-replace-region x t))
                        (t (anything-replace-string-region x)))
                  (setq match t)
                  (return nil)))))
 
+(defun anything-replace-regexp-action (candidate)
+  (message "replace regexp")
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (if (equal (concat (car x) anything-replace-string-separator (cadr x)) candidate)
+               (progn
+                 (anything-replace-string-region x 'search-forward-regexp)
+                 (setq match t)
+                 (return nil)))))
+
 (defun anything-replace-string-action (candidate)
-  (message "replace")
+  (message "replace string")
   (loop with match = nil
         until match
         for x in anything-replace-string-history
@@ -139,8 +152,19 @@
                  (setq match t)
                  (return nil)))))
 
+(defun anything-query-replace-regexp-action (candidate)
+  (message "query replace regexp")
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (if (equal (concat (car x) anything-replace-string-separator (cadr x)) candidate)
+               (progn
+                 (anything-query-replace-region x t)
+                 (setq match t)
+                 (return nil)))))
+
 (defun anything-query-replace-action (candidate)
-  (message "query")
+  (message "query replace string ")
   (loop with match = nil
         until match
         for x in anything-replace-string-history
