@@ -125,7 +125,7 @@
                  (cond ((equal 'replace-string (caddr x)) (anything-replace-string-region x))
                        ((equal 'query-string (caddr x)) (anything-query-replace-region x))
                        (equal 'replace-regexp (caddr x)) (anything-replace-string-region x 'search-forward-regexp))
-                        (equal 'replace-regexp (caddr x)) (anything-query-replace-region x t))
+                        (equal 'query-regexp (caddr x)) (anything-query-replace-region x t))
                        (t (anything-replace-string-region x)))
                  (setq match t)
                  (return nil)))))
@@ -221,7 +221,7 @@
     (unless (car anything-replace-string-region)
       (setq prompt "Replace regexp "))
     (setq to-string (read-regexp (concat prompt candidate " with: ")))
-    (anything-replace-string-push-history candidate to-string 'replace-string)
+    (anything-replace-string-push-history candidate to-string 'replace-regexp)
     (anything-replace-string-region (list candidate to-string 'replace-string) 'search-forward-regexp )))
 
 (defun anything-query-replace-dummy-action (candidate)
@@ -237,7 +237,7 @@
     (unless (region-active-p)
       (setq prompt "Query Replace regexp "))
     (setq to-string (read-string (concat prompt candidate " with: ")))
-    (anything-replace-string-push-history candidate to-string 'query-string)
+    (anything-replace-string-push-history candidate to-string 'query-regexp)
     (anything-query-replace-region (list candidate to-string 'query-string) t )))
 
 (defun anything-replace-string-region (x &optional search-fun)
