@@ -110,7 +110,10 @@
     (dummy)
     (action
      ("Replace String" . anything-replace-string-dummy-action)
-     ("Query Replace" . anything-query-replace-dummy-action))))
+     ("Replace regexp" .   anything-replace-regexp-dummy-action )
+     ("Query Replace" . anything-query-replace-dummy-action)
+     ("Query regexp" .    anything-query-replace-regexp-dummy-action )
+     )))
 
 
 (defun anything-smart-replace-action (candidate)
@@ -189,51 +192,71 @@
     (anything-replace-string-push-history candidate to-string 'replace-string)
     (anything-replace-string-region (list candidate to-string 'replace-string))))
 
+(defun anything-replace-regexp-dummy-action (candidate)
+  (let ((to-string candidate) (prompt "Replace regexp in region "))
+    (unless (car anything-replace-string-region)
+      (setq prompt "Replace regexp "))
+    (setq to-string (read-regexp (concat prompt candidate " with: ")))
+    (anything-replace-string-push-history candidate to-string 'replace-string)
+    (anything-replace-string-region (list candidate to-string 'replace-string) 'search-forward-regexp )))
+
 (defun anything-query-replace-dummy-action (candidate)
   (let ((to-string candidate) (prompt "Query Replace string in region "))
     (unless (region-active-p)
       (setq prompt "Query Replace string "))
     (setq to-string (read-string (concat prompt candidate " with: ")))
     (anything-replace-string-push-history candidate to-string 'query-string)
-    (anything-query-replace-region (list candidate to-string 'query-string))))
+    (anything-query-replace-region (list candidate to-string 'query-string) )))
 
-(defun anything-replace-string-region (x)
+(defun anything-query-replace-regexp-dummy-action (candidate)
+  (let ((to-string candidate) (prompt "Query Replace regexp in region "))
+    (unless (region-active-p)
+      (setq prompt "Query Replace regexp "))
+    (setq to-string (read-string (concat prompt candidate " with: ")))
+    (anything-replace-string-push-history candidate to-string 'query-string)
+    (anything-query-replace-region (list candidate to-string 'query-string) t )))
+
+(defun anything-replace-string-region (x &optional search-fun)
   "Replace string."
   (let* ((from-string (car x))
        (to-string (cadr x))
        (count 0)
        (beginning (if mark-active  (region-beginning) (point-min)))
        (end (if mark-active  (region-end) (point-max))))
+    (unless search-fun
+      (setq search-fun 'search-forward))
       (goto-char beginning)
-      (while (search-forward from-string end t)
+      (while (funcall search-fun from-string end t )
         (incf count)
         (replace-match to-string nil t)
         )
     (message (concat "Replaced " (number-to-string count) " occurrences"))
     (setq mark-active nil)))
 
-(defun anything-replace-string-region (x)
+(defun anything-replace-string-region (x &optional search-fun)
   "Replace string."
   (let* ((from-string (car x))
          (to-string (cadr x))
          (count 0)
          (beginning (nth 1 anything-replace-string-region))
          (end  (nth 2 anything-replace-string-region)))
+    (unless search-fun
+      (setq search-fun 'search-forward))
     (goto-char beginning)
-    (while (search-forward from-string end t)
+    (while (funcall search-fun from-string end t)
       (incf count)
       (replace-match to-string nil t)
       )
     (message (concat "Replaced " (number-to-string count) " occurrences"))
     (setq mark-active nil)))
 
-(defun anything-query-replace-region (x)
+(defun anything-query-replace-region (x &optional regexp-flag)
   "Query Replace string."
   (let((from-string (car x))
        (to-string (cadr x)))
     (if (region-active-p)
-        (perform-replace from-string to-string t nil nil nil nil (region-beginning) (region-end))
-      (perform-replace from-string to-string t nil nil))))
+        (perform-replace from-string to-string t regexp-flag nil nil nil (region-beginning) (region-end))
+      (perform-replace from-string to-string t regexp-flag nil))))
 
 (defun anything-replace-string()
   "Replace string from history."
