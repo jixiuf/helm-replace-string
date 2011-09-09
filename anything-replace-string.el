@@ -67,13 +67,23 @@
 
 (defvar anything-replace-string-history-candidates nil
   "Replace history.")
-
+;;;###autoload
 (defadvice replace-string (before anything-replace-string-replace-string(from-string to-string &optional delimited start end) activate)
-  (anything-replace-string-push-history from-string to-string 'replace-string))
+  (save-excursion (anything-replace-string-push-history from-string to-string 'replace-string)))
 
+;;;###autoload
 (defadvice query-replace (before anything-replace-string-query-replace(from-string to-string &optional delimited start end) activate)
-  (anything-replace-string-push-history from-string to-string 'query-string))
+  (save-excursion (anything-replace-string-push-history from-string to-string 'query-string)))
 
+;;;###autoload
+(defadvice query-replace-regexp (before anything-replace-string-query-replace(from-string to-string &optional delimited start end) activate)
+  (save-excursion (anything-replace-string-push-history from-string to-string 'query-regexp)))
+
+;;;###autoload
+(defadvice replace-regexp (before anything-replace-string-query-replace(from-string to-string &optional delimited start end) activate)
+  (save-excursion (anything-replace-string-push-history from-string to-string 'replace-regexp)))
+
+;;;###autoload
 (defun anything-replace-string-push-history (from-string to-string &optional replace-type)
   "Push replace history."
   (push (list from-string to-string replace-type) anything-replace-string-history)
