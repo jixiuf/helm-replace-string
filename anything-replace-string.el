@@ -50,7 +50,6 @@
 
 ;;; Code:
 
-(require 'cl)
 (require 'anything)
 
 (defgroup anything-replace-string nil
@@ -191,27 +190,16 @@
 
 (defun anything-replace-string-region (x)
   "Replace string."
-  (let ((from-string (car x))
+  (let* ((from-string (car x))
        (to-string (cadr x))
        (count 0)
-       (current (point))
-       (beginning (region-beginning))
-       (end (region-end)))
-    (if (region-active-p)
-        (progn
-          (goto-char beginning)
-          (while (search-forward from-string nil t)
-            (unless (< end (point))
-              (incf count)
-              (replace-match to-string nil t)
-              (unless (< end (point))
-                (setq current (point))))))
-      (goto-char (point-min))
-      (while (search-forward from-string nil t)
+       (beginning (if mark-active  (region-beginning) (point-min)))
+       (end (if mark-active  (region-end) (point-max))))
+      (goto-char beginning)
+      (while (search-forward from-string end t)
         (incf count)
         (replace-match to-string nil t)
-        (setq current (point))))
-    (goto-char current)
+        )
     (message (concat "Replaced " (number-to-string count) " occurrences"))
     (setq mark-active nil)))
 
