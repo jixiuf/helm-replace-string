@@ -85,7 +85,11 @@
   (push (concat from-string anything-replace-string-separator to-string) anything-replace-string-history-candidates))
 
 (defvar anything-c-source-replace-string
-  '((name . "Replace string from history")
+  '((init . (lambda () "init. " (if mark-active
+                                    (setq anything-replace-string-region (list t (region-beginning) (region-end)))
+                                  (setq anything-replace-string-region (list nil (point-min) (point-max)))
+                                  )))
+    (name . "Replace string from history")
     (candidates . anything-replace-string-history-candidates)
     (action
      ("Smart Replace" . anything-smart-replace-action)
@@ -96,13 +100,18 @@
      ("Query Replace Reverse" . anything-query-replace-reverse-action))
     (migemo)
     (multiline)))
-
+(defvar anything-replace-string-region nil)
 (defvar anything-c-source-replace-string-dummy
-  '((name . "Replace string")
+  '((init . (lambda () "init. " (if mark-active
+                                    (setq anything-replace-string-region (list t (region-beginning) (region-end)))
+                                  (setq anything-replace-string-region (list nil (point-min) (point-max)))
+                                  )))
+    (name . "Replace string")
     (dummy)
     (action
      ("Replace String" . anything-replace-string-dummy-action)
      ("Query Replace" . anything-query-replace-dummy-action))))
+
 
 (defun anything-smart-replace-action (candidate)
   (loop with match = nil
@@ -174,7 +183,7 @@
 
 (defun anything-replace-string-dummy-action (candidate)
   (let ((to-string candidate) (prompt "Replace string in region "))
-    (unless (region-active-p)
+    (unless (car anything-replace-string-region)
       (setq prompt "Replace string "))
     (setq to-string (read-string (concat prompt candidate " with: ")))
     (anything-replace-string-push-history candidate to-string 'replace-string)
@@ -200,6 +209,21 @@
         (incf count)
         (replace-match to-string nil t)
         )
+    (message (concat "Replaced " (number-to-string count) " occurrences"))
+    (setq mark-active nil)))
+
+(defun anything-replace-string-region (x)
+  "Replace string."
+  (let* ((from-string (car x))
+         (to-string (cadr x))
+         (count 0)
+         (beginning (nth 1 anything-replace-string-region))
+         (end  (nth 2 anything-replace-string-region)))
+    (goto-char beginning)
+    (while (search-forward from-string end t)
+      (incf count)
+      (replace-match to-string nil t)
+      )
     (message (concat "Replaced " (number-to-string count) " occurrences"))
     (setq mark-active nil)))
 
