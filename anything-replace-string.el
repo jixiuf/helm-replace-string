@@ -37,6 +37,8 @@
 ;;
 ;; Below are complete command list:
 ;;
+;;  `anything-replace-string'
+;;    Replace string from history.
 ;;
 ;;; Customizable Options:
 ;;
@@ -124,8 +126,8 @@
                (progn
                  (cond ((equal 'replace-string (caddr x)) (anything-replace-string-region x))
                        ((equal 'query-string (caddr x)) (anything-query-replace-region x))
-                       (equal 'replace-regexp (caddr x)) (anything-replace-string-region x 'search-forward-regexp))
-                        (equal 'query-regexp (caddr x)) (anything-query-replace-region x t))
+                       ((equal 'replace-regexp (caddr x)) (anything-replace-string-region x 'search-forward-regexp))
+                        ((equal 'query-regexp (caddr x)) (anything-query-replace-region x t))
                        (t (anything-replace-string-region x)))
                  (setq match t)
                  (return nil)))))
@@ -239,23 +241,6 @@
     (setq to-string (read-string (concat prompt candidate " with: ")))
     (anything-replace-string-push-history candidate to-string 'query-regexp)
     (anything-query-replace-region (list candidate to-string 'query-string) t )))
-
-(defun anything-replace-string-region (x &optional search-fun)
-  "Replace string."
-  (let* ((from-string (car x))
-       (to-string (cadr x))
-       (count 0)
-       (beginning (if mark-active  (region-beginning) (point-min)))
-       (end (if mark-active  (region-end) (point-max))))
-    (unless search-fun
-      (setq search-fun 'search-forward))
-      (goto-char beginning)
-      (while (funcall search-fun from-string end t )
-        (incf count)
-        (replace-match to-string nil t)
-        )
-    (message (concat "Replaced " (number-to-string count) " occurrences"))
-    (setq mark-active nil)))
 
 (defun anything-replace-string-region (x &optional search-fun)
   "Replace string."
