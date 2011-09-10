@@ -267,9 +267,12 @@
 (defun anything-query-replace-region (x &optional regexp-flag)
   "Query Replace string."
   (let((from-string (car x))
-       (to-string (cadr x)))
-    (if (region-active-p)
-        (perform-replace from-string to-string t regexp-flag nil nil nil (region-beginning) (region-end))
+       (to-string (cadr x))
+       (beginning (nth 1 anything-replace-string-region))
+       (end  (nth 2 anything-replace-string-region))
+       )
+    (if (car anything-replace-string-region)
+        (perform-replace from-string to-string t regexp-flag nil nil nil beginning end)
       (perform-replace from-string to-string t regexp-flag nil))))
 
 ;;;###autoload
