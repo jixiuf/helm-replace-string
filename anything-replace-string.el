@@ -69,19 +69,19 @@
   "Replace history.")
 ;;;###autoload
 (defadvice replace-string (before anything-replace-string-replace-string(from-string to-string &optional delimited start end) activate)
-  (save-excursion (anything-replace-string-push-history from-string to-string 'replace-string)))
+   (anything-replace-string-push-history from-string to-string 'replace-string))
 
 ;;;###autoload
 (defadvice query-replace (before anything-replace-string-query-replace(from-string to-string &optional delimited start end) activate)
-  (save-excursion (anything-replace-string-push-history from-string to-string 'query-string)))
+   (anything-replace-string-push-history from-string to-string 'query-string))
 
 ;;;###autoload
 (defadvice query-replace-regexp (before anything-replace-string-query-replace(from-string to-string &optional delimited start end) activate)
-  (save-excursion (anything-replace-string-push-history from-string to-string 'query-regexp)))
+ (anything-replace-string-push-history from-string to-string 'query-regexp))
 
 ;;;###autoload
 (defadvice replace-regexp (before anything-replace-string-query-replace(from-string to-string &optional delimited start end) activate)
-  (save-excursion (anything-replace-string-push-history from-string to-string 'replace-regexp)))
+ (anything-replace-string-push-history from-string to-string 'replace-regexp))
 
 ;;;###autoload
 (defun anything-replace-string-push-history (from-string to-string &optional replace-type)
