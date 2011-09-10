@@ -68,7 +68,7 @@
 (defvar anything-replace-string-history-candidates nil
   "Replace history.")
 ;;;###autoload
-(defadvice replace-string (before anything-replace-string-replace-string(from-string to-string &optional delimited start end) activate)
+(defadvice replacen-string (before anything-replace-string-replace-string(from-string to-string &optional delimited start end) activate)
    (anything-replace-string-push-history from-string to-string 'replace-string))
 
 ;;;###autoload
@@ -86,6 +86,10 @@
 ;;;###autoload
 (defun anything-replace-string-push-history (from-string to-string &optional replace-type)
   "Push replace history."
+  (setq anything-replace-string-history (delete  (list from-string to-string replace-type)  anything-replace-string-history))
+  (setq anything-replace-string-history-candidates
+        (delete (concat from-string anything-replace-string-separator to-string)
+                anything-replace-string-history-candidates))
   (push (list from-string to-string replace-type) anything-replace-string-history)
   (push (concat from-string anything-replace-string-separator to-string) anything-replace-string-history-candidates))
 
