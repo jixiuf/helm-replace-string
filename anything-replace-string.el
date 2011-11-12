@@ -284,10 +284,17 @@
   "Replace string from history."
   (interactive)
   (let ((prompt "Replace string in region: ")
-        (anything-samewindow nil))
-    (unless (region-active-p)
-      (setq prompt "Replace string: "))
-    (anything (list anything-c-source-replace-string-dummy anything-c-source-replace-string) nil prompt nil nil)))
+        (anything-samewindow nil)
+        (init-input ""))
+    (unless  mark-active
+      (setq prompt "Replace string: ")
+      )
+    (when (and mark-active (< (- (region-end) (region-beginning)) 50))
+      (setq init-input  (buffer-substring-no-properties (region-beginning)  (region-end) ))
+      )
+    (anything (list anything-c-source-replace-string-dummy anything-c-source-replace-string)
+              init-input
+              prompt nil nil)))
 
 (provide 'anything-replace-string)
 ;;; anything-replace-string.el ends here
