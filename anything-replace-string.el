@@ -283,7 +283,8 @@
 (defun anything-replace-string()
   "Replace string from history."
   (interactive)
-  (let ((prompt "Replace string in region: "))
+  (let ((prompt "Replace string in region: ")
+        (anything-samewindow nil))
     (unless (region-active-p)
       (setq prompt "Replace string: "))
     (anything (list anything-c-source-replace-string-dummy anything-c-source-replace-string) nil prompt nil nil)))
