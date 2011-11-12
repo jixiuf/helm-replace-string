@@ -290,6 +290,7 @@
       (setq prompt "Replace string: ")
       )
     (when (and mark-active (< (- (region-end) (region-beginning)) 50))
+      (setq prompt "Replace string: ")
       (setq init-input  (buffer-substring-no-properties (region-beginning)  (region-end) ))
       )
     (anything (list anything-c-source-replace-string-dummy anything-c-source-replace-string)
