@@ -1,0 +1,4 @@
+anything.el has been renamed to Emacs Helm. The new project is hosted under
+GitHub? - https://github.com/thierryvolpiatto/Emacs-helm. Please, update old
+anything.el plugins accordingly to be used with Helm.
+so 
