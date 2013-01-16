@@ -67,6 +67,7 @@
 
 (defvar helm-replace-string-history-candidates nil
   "Replace history.")
+
 ;;;###autoload
 (defadvice replacen-string (before helm-replace-string-replace-string(from-string to-string &optional delimited start end) activate)
    (helm-replace-string-push-history from-string to-string 'replace-string))
@@ -279,12 +280,13 @@
         (perform-replace from-string to-string t regexp-flag nil nil nil beginning end)
       (perform-replace from-string to-string t regexp-flag nil))))
 
+
 ;;;###autoload
 (defun helm-replace-string()
   "Replace string from history."
   (interactive)
   (let ((prompt "Replace string in region: ")
-        (helm-samewindow nil)
+        (helm-full-frame nil)
         (init-input ""))
     (unless  mark-active
       (setq prompt "Replace string: ")
